@@ -1,0 +1,81 @@
+adapt:
+  audio_emb_size: 128
+  nb_layers: 1
+
+dep:
+  use: true
+  gcn_layers: 2
+  prior_use_cache: false
+  inner_loss_frac: 0.35
+
+  prior:
+    nhead: 8
+    nlayer: 3
+
+data:
+  root_dir: '/data/qust-011/dataset'
+  features_dir: clotho_v2_vggish
+  input_field_name: vggish_embeddings
+  output_field_name: caption
+  adjmat_field_name: adj_mat
+  max_audio_len: 32
+  max_caption_tok_len: 64
+
+lm:
+  config: # Model parameters
+    activation_dropout: 0.1
+    activation_function: 'gelu'
+    attention_dropout: 0.1
+    classifier_dropout: 0.0
+    d_model: 1024
+    decoder_attention_heads: 16
+    decoder_ffn_dim: 4096
+    decoder_layers: 12
+    dropout: 0.1
+    encoder_attention_heads: 16
+    encoder_ffn_dim: 4096
+    encoder_layers: 12
+    vocab_size: 50265
+  generation: # Generation parameters
+    early_stopping: false
+    no_repeat_ngram_size: 3
+    num_beams: 3
+    min_length: 10
+    max_length: 30
+    length_penalty: 1
+    decoding: beam
+  eval_model: best
+  # eval_model: checkpoint
+  eval_checkpoint: 15000
+  freeze:
+    all: false
+    attn: false
+    dec: false
+    dec_attn: false
+    dec_mlp: false
+    dec_self_attn: false
+    enc: false
+    enc_attn: false
+    enc_mlp: false
+    mlp: false
+  tokenizer: /data/qust-011/ml_models/bart-base
+  # pretrained: /data/qust-011/ml_models/bart-small
+  pretrained: null
+
+training:
+  eval_steps: 1000
+  logging_steps: 200
+  force_cpu: false
+  batch_size: 40
+  gradient_accumulation_steps: 2
+  num_workers: 8
+  lr: 1.0e-05
+  nb_epochs: 40
+  save_steps: 1000
+  seed: 0
+
+workflow:
+  train: true
+  validate: true
+  evaluate: true
+  infer: false
